@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title></title>
+	<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+    <script type="text/javascript" charset="utf-8">
+
+    // Wait for Cordova to load
+    
+    document.addEventListener("deviceready", function(){
+    	var db = window.openDatabase("Database", "1.0", "Cordova Demo", 200000);
+    	db.transaction(populateDB, errorCB, successCB);
+    	db.transaction(findTask, errorCB, querySuccess);
+    }, false);
+
+	function findTask(tx) {
+	    tx.executeSql('SELECT * FROM TASK', [], querySuccess, errorCB);
+	}
+
+	function querySuccess(tx, results) {
+		for (var i=0; i<len; i++){
+         	alert("Row = " + i + " ID = " + results.rows.item(i).id + " Data =  " + results.rows.item(i).data);
+    	}	    
+	}
+	
+	function errorCB(err) {
+	    alert("Couldn't find any record "+err.code);
+	}
+
+	function populateDB(tx) {
+        tx.executeSql('DROP TABLE IF EXISTS TASK');
+        tx.executeSql('CREATE TABLE IF NOT EXISTS TASK (id unique, data)');
+        tx.executeSql('INSERT INTO TASK (id, data) VALUES (2, "Second row")');
+        alert('successfully added a task record');
+    }
+
+    function successCB() {
+        alert("success!");
+    }
+
+    function saveContact() {
+       	var myContact = navigator.contacts.create({"displayName": document.getElementById('contactName').value});
+        myContact.note = "This contact has a note.";
+        console.log("The contact, " + myContact.displayName + ", note: " + myContact.note);
+        myContact.save(onSuccess,onError);
+    }
+    
+    function showAllContacts(){
+			var options = new ContactFindOptions();
+		options.filter=document.getElementById('contactName').value;
+		options.multiple=true; 
+		var fields = ["displayName", "name"];
+		navigator.contacts.find(fields, function(contacts){
+			for (var i=0; i<contacts.length; i++) {
+        	    console.log("Display Name = " + contacts[i].displayName);
+        	    document.getElementById('contactNameId').value = contacts[i].displayName;
+        	    document.getElementById('contactNoteId').value = contacts[i].note;
+        	}
+        	if(contacts.length == 0){
+        		
+        	}
+		}, onError, options);    
+    }
+    
+    function saveTask() {
+       	var myContact = navigator.contacts.create({"displayName": document.getElementById('contactName').value});
+        myContact.note = "This contact has a note.";
+        console.log("The contact, " + myContact.displayName + ", note: " + myContact.note);
+        myContact.save(onSuccess,onError);
+    }
+    
+    function showAllTasks(){
+		// find all contacts with 'Bob' in any name field
+		var options = new ContactFindOptions();
+		options.filter=document.getElementById('contactName').value;
+		options.multiple=true; 
+		var fields = ["displayName", "name"];
+		navigator.contacts.find(fields, function(contacts){
+			for (var i=0; i<contacts.length; i++) {
+        	    console.log("Display Name = " + contacts[i].displayName);
+        	    document.getElementById('contactNameId').value = contacts[i].displayName;
+        	    document.getElementById('contactNoteId').value = contacts[i].note;
+        	}
+        	if(contacts.length == 0){
+        		
+        	}
+		}, onError, options);    
+    }
+    
+    function onSuccess(contact) {
+    	alert("Saved Successfully!");
+	};
+
+	function onError(contactError) {
+    	alert("Error = " + contactError.code);
+	};
+
+
+    </script>
+  </head>
+  <body>
+    <h3>Group Todo List!</h1>
+    <p>Manage your team's todo list</p>
+    <table>
+	    <tr><td>Task Name : </td><td><input type="text" id="taskName"/></td></tr>
+	    <tr>
+	        <td><input type="button" onclick="saveTask()" value="Save"/></td>
+	        <td><input type="button" onclick="showAllTasks()" value="Show"/></td>
+	    </tr>	
+	</table>
+	<br/><br/><br/>
+    <table>
+	    <tr><td>Contact Name : </td><td><input type="text" id="contactName"/></td></tr>
+	    <tr>
+	        <td><input type="button" onclick="saveContact()" value="Save"/></td>
+	        <td><input type="button" onclick="showAllContacts()" value="Show"/></td>
+	    </tr>	
+	</table>
+	
+	 <table>
+	 	<tr><td>Contact Details found : </td></tr>
+	    <tr><td>Contact Name : </td><td><input type="text" value="" id="contactNameId"/></td></tr>
+	    <tr><td>Contact Note : </td><td><input type="text" value="" id="contactNameId"/></td></tr>
+	</table>
+  </body>
+</html>
